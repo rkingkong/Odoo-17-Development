@@ -92,7 +92,7 @@ patch(ActionpadWidget.prototype, {
                         'floor': this.currentOrder.pos.currentFloor?.name || null,
                         'config_id': this.pos.config.id
                     };
-
+                    console.log("Current order ID before sending to backend:", this.currentOrder.id);
                     // Create a new kitchen ticket if the order is already completed or ready
                     if (this.currentOrder && this.currentOrder.orderlines.length > 0) {
                         await this.orm.call("kitchen.screen", "create_new_kitchen_order", [this.currentOrder.id]);
