@@ -19,7 +19,7 @@ class KitchenScreen(models.Model):
             return [('module_pos_restaurant', '=', True)]
 
     sequence = fields.Char(readonly=True, default='New',
-                           copy=False, tracking=True, help="Sequence of items")
+                           copy=False, help="Sequence of items")
     pos_config_id = fields.Many2one('pos.config', string='Allowed POS',
                                     domain=_pos_shop_id,
                                     help="Allowed POS for kitchen")
