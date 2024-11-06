@@ -6,7 +6,12 @@
         <field name="description">Kitchen Access Groups</field>
         <field name="sequence">20</field>
     </record>
-
+    
+    <record id="group_pos_kitchen_manager" model="res.groups">
+        <field name="name">POS Kitchen Manager</field>
+        <field name="category_id" ref="base.module_category_point_of_sale"/>
+    </record>
+    
     <record id="kitchen_cook" model="res.groups">
         <field name="name">Kitchen Cook</field>
         <field name="category_id"
