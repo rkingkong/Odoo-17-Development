@@ -1,5 +1,6 @@
+# -*- coding: utf-8 -*-
 import logging
-from odoo import api, fields, models, _
+from odoo import api, fields, models
 
 _logger = logging.getLogger(__name__)
 
@@ -9,26 +10,16 @@ class KitchenScreen(models.Model):
     _description = 'POS Kitchen Screen'
     _rec_name = 'sequence'
 
+    # Fields definition
+    sequence = fields.Char(readonly=True, default='New', copy=False, help="Sequence of items")
+    pos_config_id = fields.Many2one('pos.config', string='Allowed POS', help="Allowed POS for kitchen")
+    pos_categ_ids = fields.Many2many('pos.category', string='Allowed POS Category', help="Allowed POS Category for the corresponding POS")
+    shop_number = fields.Integer(related='pos_config_id.id', string='Customer', help="Id of the POS")
+
     def _pos_shop_id(self):
         """Domain for the POS Shop"""
-        kitchen = self.search([])
-        if kitchen:
-            return [('module_pos_restaurant', '=', True),
-                    ('id', 'not in', [rec.id for rec in kitchen.pos_config_id])]
-        else:
-            return [('module_pos_restaurant', '=', True)]
-
-    sequence = fields.Char(readonly=True, default='New',
-                           copy=False, help="Sequence of items")
-    pos_config_id = fields.Many2one('pos.config', string='Allowed POS',
-                                    domain=_pos_shop_id,
-                                    help="Allowed POS for kitchen")
-    pos_categ_ids = fields.Many2many('pos.category',
-                                     string='Allowed POS Category',
-                                     help="Allowed POS Category"
-                                          "for the corresponding POS")
-    shop_number = fields.Integer(related='pos_config_id.id', string='Customer',
-                                 help="Id of the POS")
+        # Simplified domain method
+        return [('module_pos_restaurant', '=', True)]
 
     def kitchen_screen(self):
         """Redirect to corresponding kitchen screen for the cook"""
@@ -41,18 +32,16 @@ class KitchenScreen(models.Model):
     @api.model
     def create(self, vals):
         """Used to create sequence"""
-        # Add logic to generate a new sequence number for each new kitchen order
+        # Generate a new sequence number for each new kitchen order
         if vals.get('sequence', 'New') == 'New':
             vals['sequence'] = self.env['ir.sequence'].next_by_code('kitchen.screen')
-        # Ensure a new kitchen order is created whenever a new item is added
         result = super(KitchenScreen, self).create(vals)
+        _logger.debug("Successfully created KitchenScreen record with sequence: %s", result.sequence)
         return result
 
     @api.model
     def create_new_kitchen_order(self, pos_order_id):
         """Create a new kitchen order for additional items added to an existing table"""
-
-        # Log that we are attempting to create a new kitchen order
         _logger.info("Attempting to create a new kitchen order for POS order ID: %s", pos_order_id)
 
         # Ensure pos_order_id is valid
@@ -73,7 +62,6 @@ class KitchenScreen(models.Model):
             _logger.error("The POS order ID %s has no lines. Cannot create kitchen order without items.", pos_order_id)
             raise ValueError("No POS Order lines found. The order list is empty.")
 
-        # Log that we are proceeding with creating the kitchen order
         _logger.info("POS Order ID %s is valid. Proceeding to create a kitchen order.", pos_order_id)
 
         # Create a new kitchen order with appropriate fields
