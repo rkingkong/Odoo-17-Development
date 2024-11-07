@@ -86,7 +86,7 @@
         <field name="name">kitchen.screen.view.tree</field>
         <field name="model">kitchen.screen</field>
         <field name="arch" type="xml">
-            <tree>
+            <tree string="Kitchen Screen">
                 <field name="sequence"/>
                 <field name="pos_config_id"/>
                 <field name="pos_categ_ids"/>
